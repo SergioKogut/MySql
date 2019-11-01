@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.DAL;
+using MySql.DAL.Entity;
 
 namespace MySql
 {
@@ -20,7 +23,15 @@ namespace MySql
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+            services.AddDbContext<EFContext>(options =>
+        options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+
+
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -63,6 +74,8 @@ namespace MySql
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            SeederDB.SeedDataByAS(app.ApplicationServices);
         }
     }
 }
